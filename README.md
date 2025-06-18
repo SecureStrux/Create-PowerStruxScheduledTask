@@ -60,10 +60,4 @@ This PowerShell script automates the creation of a scheduled task on either a lo
 | `CertThumbprint`  | Thumbprint of the code signing certificate. Required. |
 | `CertPath`        | Full path to the `.cer` certificate file for importing the certificate if it's missing. |
 
-## Troubleshooting
-
-- **WinRM connection issues**: Run `Enable-PSRemoting -Force` on the remote system and ensure firewall rules allow WinRM.
-- **Certificate import fails**: Verify that the certificate is valid, unexpired, and accessible at the specified path.
-- **Task does not appear or run**: Check Task Scheduler and ensure the account running the task has sufficient permissions and the executable path is valid.
-
 ---
