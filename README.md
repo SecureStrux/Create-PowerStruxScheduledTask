@@ -1,5 +1,5 @@
 # Create-PowerStruxScheduledTask
-This PowerShell script automates the creation of a signed scheduled task on either a local or remote Windows system. It is designed to support enterprise environments where tasks must be signed and scheduled securely under SYSTEM or a specified user account.
+This PowerShell script automates the creation of a scheduled task on either a local or remote Windows system.
 
 ---
 
