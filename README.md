@@ -49,8 +49,7 @@ This PowerShell script automates the creation of a scheduled task on either a lo
    ```powershell
    Set-Location -Path "C:\Scripts\InitiatePowerStrux"
    ```
-5. Copy the `.cer` certificate file to a known local path (e.g., `C:\Certificates\MyCert.cer`).
-6. Run the script with appropriate parameters. Example:
+5. Run the script with appropriate parameters. Example:
    ```powershell
    .\Initiate-PowerStrux.ps1 `
        -ComputerName "Server01" `
@@ -58,6 +57,6 @@ This PowerShell script automates the creation of a scheduled task on either a lo
        -ScheduleType "Weekly" `
        -DayOfWeek "Friday" `
    ```
-7. Verify the task was created by checking Task Scheduler on the target machine.
+6. Verify the task was created by checking Task Scheduler on the target machine.
 
 ---
