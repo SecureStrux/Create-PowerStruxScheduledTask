@@ -30,15 +30,15 @@ This PowerShell script automates the creation of a scheduled task on either a lo
 4. Run the script using parameters appropriate for your use case. Example:
 
    ```powershell
-   .\Initiate-PowerStrux.ps1 \
-       -ComputerName "Server01" \
-       -TaskName "Initiate PowerStrux" \
-       -ExecutablePath "C:\Program Files\MyApp\Initiate-PowerStruxWA.exe" \
-       -TriggerTime "02:00AM" \
-       -ScheduleType "Weekly" \
-       -DayOfWeek "Friday" \
-       -User "SYSTEM" \
-       -CertThumbprint "9147D6FA4DD42EDCD983300B485A396D060B9214" \
+   .\Initiate-PowerStrux.ps1 `
+       -ComputerName "Server01" `
+       -TaskName "Initiate PowerStrux" `
+       -ExecutablePath "C:\Program Files\MyApp\Initiate-PowerStruxWA.exe" `
+       -TriggerTime "02:00AM" `
+       -ScheduleType "Weekly" `
+       -DayOfWeek "Friday" `
+       -User "SYSTEM" `
+       -CertThumbprint "9147D6FA4DD42EDCD983300B485A396D060B9214" `
        -CertPath "C:\Certificates\MyCert.cer"
    ```
 
