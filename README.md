@@ -40,24 +40,24 @@ This PowerShell script automates the creation of a scheduled task on either a lo
 
 ## Instructions
 
-1. Open PowerShell as **Administrator** on your management machine.
-2. Copy the `.cer` certificate file to a known local path (e.g., `C:\Certificates\MyCert.cer`).
-3. Download or clone this script to your local machine.
-4. Run the script using parameters appropriate for your use case. Example:
+## Instructions
 
+1. Download the repository as a ZIP archive from GitHub.
+2. Extract the ZIP archive to a known location (e.g., `C:\Scripts\InitiatePowerStrux`).
+3. Open PowerShell **as Administrator**.
+4. Change to the extracted directory:
+   ```powershell
+   Set-Location -Path "C:\Scripts\InitiatePowerStrux"
+   ```
+5. Copy the `.cer` certificate file to a known local path (e.g., `C:\Certificates\MyCert.cer`).
+6. Run the script with appropriate parameters. Example:
    ```powershell
    .\Initiate-PowerStrux.ps1 `
        -ComputerName "Server01" `
-       -TaskName "Initiate PowerStrux" `
-       -ExecutablePath "C:\Program Files\MyApp\Initiate-PowerStruxWA.exe" `
        -TriggerTime "02:00AM" `
        -ScheduleType "Weekly" `
        -DayOfWeek "Friday" `
-       -User "SYSTEM" `
-       -CertThumbprint "9147D6FA4DD42EDCD983300B485A396D060B9214" `
-       -CertPath "C:\Certificates\MyCert.cer"
    ```
-
-6. Verify the task was created by checking Task Scheduler on the target machine.
+7. Verify the task was created by checking Task Scheduler on the target machine.
 
 ---
