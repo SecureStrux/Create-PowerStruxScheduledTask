@@ -134,12 +134,12 @@ else {
     }
 
     # Copy the cert file to remote temp location
-    $remoteCertPath = "C:\Program Files\WindowsPowerShell\Modules\ReportHTML"
+    $remoteCertPath = "C:\Program Files\WindowsPowerShell\Modules\ReportHTML\2025 - 2027 SecureStrux Code Signing Certificate.cer"
     Copy-Item -Path $CertPath -Destination "\\$ComputerName\C$\Program Files\WindowsPowerShell\Modules\ReportHTML" -Force -ErrorAction Stop
 
     # Remotely check/import cert and create task
     Invoke-Command -ComputerName $ComputerName -ScriptBlock {
-        param($TaskName, $ExecutablePath, $TriggerTime, $ScheduleType, $User, $Thumbprint, $CertFile)
+        param($TaskName, $ExecutablePath, $TriggerTime, $ScheduleType, $User, $Thumbprint, $remoteCertPath, $DayOfWeek)
 
         # Remote cert check/import logic
         function Test-CodeCertificateRemote {
@@ -193,7 +193,7 @@ else {
         }
 
         # Import cert and create task
-        if (-not (Test-CodeCertificateRemote -Thumbprint $Thumbprint -CertFile $CertFile)) {
+        if (-not (Test-CodeCertificateRemote -Thumbprint $Thumbprint -CertPath $remoteCertPath)) {
             Write-Error "Cert import failed. Aborting remote task creation."
             return
         }
@@ -201,7 +201,7 @@ else {
         Create-ScheduledTaskRemote -Name $TaskName -ExePath $ExecutablePath -Time $TriggerTime -Frequency $ScheduleType -RunUser $User
 
         # Optional: Clean up temp cert file
-        Remove-Item -Path $CertFile -Force -ErrorAction SilentlyContinue
+        Remove-Item -Path $remoteCertPath -Force -ErrorAction SilentlyContinue
 
-    } -ArgumentList $TaskName, $ExecutablePath, $TriggerTime, $ScheduleType, $User, $CertThumbprint, $remoteCertPath
+    } -ArgumentList $TaskName, $ExecutablePath, $TriggerTime, $ScheduleType, $User, $CertThumbprint, $remoteCertPath, $DayOfWeek
 }
