@@ -1,4 +1,4 @@
-﻿param (
+param (
     [string]$ComputerName = "localhost", # Target system (local or remote)
     [string]$TaskName = "Initiate PowerStrux", # Scheduled task name
     [string]$ExecutablePath = "C:\Program Files\WindowsPowerShell\Modules\ReportHTML\Initiate-PowerStruxWA.exe", # Path to executable
@@ -8,7 +8,7 @@
     [string]$DayOfWeek = "Monday",
     [string]$User = "SYSTEM", # Account to run task as (default is SYSTEM)
     [string]$CertThumbprint = "9147D6FA4DD42EDCD983300B485A396D060B9214", # Thumbprint of code signing cert
-    [string]$CertPath = "$PSScriptRoot\Certificates\2025 - 2027 SecureStrux Code Signing Certificate.cer"  # Path to .cer file for import if needed
+    [string]$CertPath = "$PSScriptRoot\2025 - 2027 SecureStrux Code Signing Certificate.cer"  # Path to .cer file for import if needed
 )
 
 # Checks if certificate exists in Trusted Publisher store; imports if not
