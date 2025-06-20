@@ -75,6 +75,45 @@ function Test-RemoteConnectivity {
     return $true
 }
 
+Function Test-CodeSignatureTrust {
+    [CmdletBinding()]
+    [OutputType([bool])]
+    param (
+        # Path to the file whose digital signature will be validated
+        [Parameter(Mandatory = $true)]
+        [string]$FilePath,
+
+        # Array of expected (trusted) certificate thumbprints
+        [Parameter(Mandatory = $true)]
+        [string[]]$ExpectedThumbprints
+    )
+
+    try {
+        # Retrieve digital signature details from the specified file
+        $signatureInfo = Get-AuthenticodeSignature -FilePath $FilePath -ErrorAction Stop
+
+        # Extract and normalize the thumbprint from the signer's certificate
+        $actualThumbprint = $signatureInfo.SignerCertificate.Thumbprint.ToUpper()
+    }
+    catch {
+        # Warn and return false if signature cannot be retrieved
+        Write-Warning "Unable to obtain digital signature information for $FilePath`: $_"
+        return $false
+    }
+
+    # Normalize all expected thumbprints for case-insensitive comparison
+    $normalizedExpectedThumbprints = $ExpectedThumbprints | ForEach-Object { $_.ToUpper() }
+
+    # Validate the signature and check the thumbprint against expected values
+    if ($signatureInfo.Status -ne "Valid" -or $actualThumbprint -notin $normalizedExpectedThumbprints) {
+        Write-Warning "The digital signature is either not valid or does not match an expected thumbprint."
+        return $false
+    }
+
+    # Signature is valid and from an expected certificate
+    return $true
+}
+
 # Creates the scheduled task on the current system
 function Create-ScheduledTask {
     param (
@@ -121,6 +160,21 @@ if ($boolIsLocalHost -eq $TRUE) {
     # Local system: ensure cert exists/imported, then create task
     if (-not (Test-CodeCertificate -Thumbprint $CertThumbprint -CertPath $CertPath)) {
         Write-Error "Certificate check/import failed. Aborting."
+        return
+    }
+
+    if (-not (Test-CodeSignatureTrust -FilePath $ExecutablePath -ExpectedThumbprints $CertThumbprint)) {
+        Write-Error "The digital signature's thumbprint applied to $ExecutablePath does not match $CertThumbprint ."
+        return
+    }
+
+    if (-not (Test-CodeSignatureTrust -FilePath 'C:\Program Files\WindowsPowerShell\Modules\ReportHTML\1.4.1.2\ReportHTML.psm1' -ExpectedThumbprints $CertThumbprint)) {
+        Write-Error "The digital signature's thumbprint applied to C:\Program Files\WindowsPowerShell\Modules\ReportHTML\1.4.1.2\ReportHTML.psm1 does not match $CertThumbprint ."
+        return
+    }
+
+    if (-not (Test-CodeSignatureTrust -FilePath 'C:\Program Files\WindowsPowerShell\Modules\ReportHTML\1.4.1.2\ReportHTMLHelp.psm1' -ExpectedThumbprints $CertThumbprint)) {
+        Write-Error "The digital signature's thumbprint applied to C:\Program Files\WindowsPowerShell\Modules\ReportHTML\1.4.1.2\ReportHTMLHelp.psm1 does not match $CertThumbprint ."
         return
     }
 
@@ -192,9 +246,63 @@ else {
             }
         }
 
+        Function Test-CodeSignatureTrustRemote {
+            [CmdletBinding()]
+            [OutputType([bool])]
+            param (
+                # Path to the file whose digital signature will be validated
+                [Parameter(Mandatory = $true)]
+                [string]$FilePath,
+
+                # Array of expected (trusted) certificate thumbprints
+                [Parameter(Mandatory = $true)]
+                [string[]]$ExpectedThumbprints
+            )
+
+            try {
+                # Retrieve digital signature details from the specified file
+                $signatureInfo = Get-AuthenticodeSignature -FilePath $FilePath -ErrorAction Stop
+
+                # Extract and normalize the thumbprint from the signer's certificate
+                $actualThumbprint = $signatureInfo.SignerCertificate.Thumbprint.ToUpper()
+            }
+            catch {
+                # Warn and return false if signature cannot be retrieved
+                Write-Warning "Unable to obtain digital signature information for $FilePath`: $_"
+                return $false
+            }
+
+            # Normalize all expected thumbprints for case-insensitive comparison
+            $normalizedExpectedThumbprints = $ExpectedThumbprints | ForEach-Object { $_.ToUpper() }
+
+            # Validate the signature and check the thumbprint against expected values
+            if ($signatureInfo.Status -ne "Valid" -or $actualThumbprint -notin $normalizedExpectedThumbprints) {
+                Write-Warning "The digital signature is either not valid or does not match an expected thumbprint."
+                return $false
+            }
+
+            # Signature is valid and from an expected certificate
+            return $true
+        }
+
         # Import cert and create task
         if (-not (Test-CodeCertificateRemote -Thumbprint $Thumbprint -CertPath $remoteCertPath)) {
             Write-Error "Cert import failed. Aborting remote task creation."
+            return
+        }
+
+        if (-not (Test-CodeSignatureTrustRemote -FilePath $ExecutablePath -ExpectedThumbprints $Thumbprint)) {
+            Write-Error "The digital signature's thumbprint applied to $ExecutablePath does not match $Thumbprint ."
+            return
+        }
+
+        if (-not (Test-CodeSignatureTrustRemote -FilePath 'C:\Program Files\WindowsPowerShell\Modules\ReportHTML\1.4.1.2\ReportHTML.psm1' -ExpectedThumbprints $Thumbprint)) {
+            Write-Error "The digital signature's thumbprint applied to C:\Program Files\WindowsPowerShell\Modules\ReportHTML\1.4.1.2\ReportHTML.psm1 does not match $Thumbprint ."
+            return
+        }
+
+        if (-not (Test-CodeSignatureTrustRemote -FilePath 'C:\Program Files\WindowsPowerShell\Modules\ReportHTML\1.4.1.2\ReportHTMLHelp.psm1' -ExpectedThumbprints $Thumbprint)) {
+            Write-Error "The digital signature's thumbprint applied to C:\Program Files\WindowsPowerShell\Modules\ReportHTML\1.4.1.2\ReportHTMLHelp.psm1 does not match $Thumbprint ."
             return
         }
 
